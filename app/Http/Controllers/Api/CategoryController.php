@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Validator;
 
 class CategoryController extends Controller
 {
@@ -17,15 +18,22 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(),[
             'name' => 'required',
         ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'error' => 'validation',
+                'errors' => $validator->errors()
+            ]);
+        }
 
         $category = new Category();
         $category->fill($request->all());
         $category->save();
 
-        return redirect()->json(
+        return response()->json(
             $category
         );
     
@@ -36,7 +44,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
         if (!$category) {
             return response()->json([
-                'error' => 'producto no encontrado'
+                'error' => 'category not found'
             ],404);
         }
         return response()->json(
@@ -45,10 +53,16 @@ class CategoryController extends Controller
     }
 
     public function update(Request $request) {
-        $request->validate([
+        $validator = Validator::make($request->all(),[
             'name' => 'required',
         ]);
 
+        if($validator->fails()) {
+            return response()->json([
+                'error' => 'validation',
+                'errors' => $validator->errors()
+            ]);
+        }
         $category = Category::find($request->id);
         $category->fill($request->all());
         $category->save();
@@ -64,7 +78,7 @@ class CategoryController extends Controller
         $category->delete();
         if (!$category) {
             return response()->json([
-                'error' => 'producto no encontrado'
+                'error' => 'Category not found'
             ],404);
         }
         return response()->json(
