@@ -26,4 +26,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('products','ProductController@store');
     Route::put('products','ProductController@update');
     Route::delete('products','ProductController@destroy');
+
+    Route::get('categories','CategoryController@index');
+    Route::get('categories/add','CategoryController@create');
+    Route::get('categories/{id}','CategoryController@show')->where('id','[0-9]+');
+    Route::post('categories','CategoryController@store');
+    Route::put('categories','CategoryController@update');
+    Route::delete('categories','CategoryController@destroy');
 });
