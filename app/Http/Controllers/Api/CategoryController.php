@@ -1,20 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
 {
     public function index() {
         $categories = Category::get();
-        return view('category.list',compact('categories'));
-    }
-
-    public function create() {
-        $categories = Category::get();
-        return view('category.create',compact('categories'));
+        return response()->json(
+            $categories->all()
+        );
     }
 
     public function store(Request $request)
@@ -27,7 +25,9 @@ class CategoryController extends Controller
         $category->fill($request->all());
         $category->save();
 
-        return redirect()->back();
+        return redirect()->json(
+            $category
+        );
     
     }
 
@@ -35,9 +35,13 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (!$category) {
-            return redirect('categories');
+            return response()->json([
+                'error' => 'producto no encontrado'
+            ],404);
         }
-        return view('category.edit',compact('category'));
+        return response()->json(
+            $category
+        );
     }
 
     public function update(Request $request) {
@@ -49,14 +53,22 @@ class CategoryController extends Controller
         $category->fill($request->all());
         $category->save();
 
-        return redirect()->back();
+        return response()->json(
+            $category
+        );
     
     }
 
     public function destroy(Request $request) {
         $category = Category::find($request->id);
         $category->delete();
-
-        return redirect('categories');
+        if (!$category) {
+            return response()->json([
+                'error' => 'producto no encontrado'
+            ],404);
+        }
+        return response()->json(
+            $category
+        );
     }
 }

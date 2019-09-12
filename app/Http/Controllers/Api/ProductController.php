@@ -1,24 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Category;
 use App\Product;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
     //
     public function index() {
         $products = Product::with('category')->get();
-        return view('product.list',compact('products'));
+        return response()->json(
+            $products->all()
+        );
     }
 
-    public function create() {
-        $categories = Category::get();
-        return view('product.create',compact('categories'));
-    }
-
+   
     public function store(Request $request)
     {
         $request->validate([
@@ -31,7 +30,9 @@ class ProductController extends Controller
         $product->fill($request->all());
         $product->save();
 
-        return redirect()->back();
+        return response()->json(
+            $product
+        );
     
     }
 
@@ -39,10 +40,13 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         if (!$product) {
-            return redirect('products');
+            return response()->json([
+                'error' => 'producto no encontrado'
+            ],404);
         }
-        $categories = Category::get();
-        return view('product.edit',compact('product','categories'));
+        return response()->json(
+            $product
+        );
     }
 
     public function update(Request $request) {
@@ -56,14 +60,22 @@ class ProductController extends Controller
         $product->fill($request->all());
         $product->save();
 
-        return redirect()->back();
+        return response()->json(
+            $product
+        );
     
     }
 
     public function destroy(Request $request) {
         $product = Product::find($request->id);
         $product->delete();
-
-        return redirect('products');
+        if (!$product) {
+            return response()->json([
+                'error' => 'producto no encontrado'
+            ],404);
+        }
+        return response()->json(
+            $product
+        );
     }
 }
