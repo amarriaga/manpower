@@ -18,3 +18,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['middleware' => 'auth'], function() {
+    Route::get('products','ProductController@index');
+    Route::get('products/add','ProductController@create');
+    Route::get('products/{id}','ProductController@show')->where('id','[0-9]+');
+    Route::post('products','ProductController@store');
+    Route::put('products','ProductController@update');
+    Route::delete('products','ProductController@destroy');
+});
